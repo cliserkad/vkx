@@ -1,24 +1,42 @@
-#include "QueueFamilyIndices.h"
-#include "StandardImports.h"
+#include "StandardIncludes.h"
 
 class QueueFamilyIndices {
-	private:
-		bool isPopulated;
-		uint32_t graphicsFamily;
 	public:
-		bool setGraphicsFamily(uint32_t graphicsFamily) {
-			if (!isPopulated) {
-				this->graphicsFamily = graphicsFamily;
-				isPopulated = true;
-				return true;
-			} else
-				return false;
-		}
-		uint32_t getGraphicsFamily() {
-			return graphicsFamily;
-		}
+		std::optional<uint32_t> graphicsFamily;
+		std::optional<uint32_t> presentFamily;
 		bool isPopulated() {
-			return isPopulated;
+			return graphicsFamily.has_value() && presentFamily.has_value();
 		}
 
+		static QueueFamilyIndices queryDevice(VkPhysicalDevice device, VkSurfaceKHR surface) {
+			QueueFamilyIndices indices;
+
+			uint32_t queueFamilyCount = 0;
+			vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+
+			std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+			vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+
+			int i = 0;
+			for (const auto& queueFamily : queueFamilies) {
+				if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+					indices.graphicsFamily = i;
+				}
+
+				VkBool32 presentSupport = false;
+				vkGetPhysicalDeviceSurfaceSupportKHR(device, i, surface, &presentSupport);
+
+				if (presentSupport) {
+					indices.presentFamily = i;
+				}
+
+				if (indices.isPopulated()) {
+					break;
+				}
+
+				i++;
+			}
+
+			return indices;
+		}
 };
