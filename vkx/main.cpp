@@ -1,5 +1,4 @@
 #include "StandardIncludes.h"
-#include "QueueFamilyIndices.cpp"
 #include "SwapChainSupport.cpp"
 
 // default window size of 720p
@@ -39,6 +38,11 @@ private:
 	VkQueue graphicsQueue;
 	VkSurfaceKHR surface;
 	VkQueue presentQueue;
+	VkSwapchainKHR swapchain;
+	QueueFamilyIndices indices;
+	std::vector<VkImage> swapChainImages;
+	VkFormat swapChainImageFormat;
+	VkExtent2D swapChainExtent;
 
 	void initWindow() {
 		glfwInit();
@@ -51,6 +55,19 @@ private:
 		createSurface();
 		registerDevice();
 		createLogicalDevice();
+		createSwapChain();
+	}
+	void createSwapChain() {
+		SwapChainSupport swapChainSupport = SwapChainSupport::queryDevice(physicalDevice, surface);
+		VkSwapchainCreateInfoKHR createInfo = swapChainSupport.buildInfoStruct(window, surface, indices);
+		swapChainImageFormat = createInfo.imageFormat;
+		swapChainExtent = createInfo.imageExtent;
+		if (vkCreateSwapchainKHR(device, &createInfo, nullptr, &swapchain) != VK_SUCCESS)
+			throw new std::runtime_error("failed to create swapchain");
+		uint32_t imageCount = 0;
+		vkGetSwapchainImagesKHR(device, swapchain, &imageCount, nullptr);
+		swapChainImages.resize(imageCount);
+		vkGetSwapchainImagesKHR(device, swapchain, &imageCount, swapChainImages.data());
 	}
 	void createSurface() {
 		if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS) {
@@ -58,7 +75,7 @@ private:
 		}
 	}
 	void createLogicalDevice() {
-		QueueFamilyIndices indices = QueueFamilyIndices::queryDevice(physicalDevice, surface);
+		indices = QueueFamilyIndices::queryDevice(physicalDevice, surface);
 
 		std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
 		std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
@@ -251,6 +268,7 @@ private:
 		}
 	}
 	void cleanup() {
+		vkDestroySwapchainKHR(device, swapchain, nullptr);
 		vkDestroyDevice(device, nullptr);
 		vkDestroySurfaceKHR(instance, surface, nullptr);
 		vkDestroyInstance(instance, nullptr);
