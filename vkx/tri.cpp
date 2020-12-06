@@ -5,10 +5,22 @@
 #include <stdexcept>
 #include <cstdlib>
 #include <vector>
+#include <cstring>
 
 // default window size of 720p
 const uint32_t DEFAULT_WINDOW_WIDTH = 1280;
 const uint32_t DEFAULT_WINDOW_HEIGHT = 720;
+
+// get the validation layers defined in the Vulkan SDK
+const std::vector<const char*> validationLayers = {
+	"VK_LAYER_KHRONOS_validation"
+};
+// turn on validation layers if compiled in debug mode
+#ifdef NDEBUG
+const bool enableValidationLayers = false;
+#else
+const bool enableValidationLayers = true;
+#endif
 
 class SingleTriangleApp {
 public:
@@ -33,6 +45,8 @@ private:
 		createInstance();
 	}
 	void createInstance() {
+		ensureValidationSuccess();
+
 		// fill a struct that contains information about the app
 		VkApplicationInfo appInfo{};
 		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
@@ -51,6 +65,12 @@ private:
 		glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 		creationInfo.enabledExtensionCount = glfwExtensionCount;
 		creationInfo.ppEnabledExtensionNames = glfwExtensions;
+		if (enableValidationLayers) {
+			creationInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+			creationInfo.ppEnabledLayerNames = validationLayers.data();
+		} else {
+			creationInfo.enabledLayerCount = 0;
+		}
 		creationInfo.enabledLayerCount = 0; // no validation layers
 		VkResult result = vkCreateInstance(&creationInfo, nullptr, &instance);
 		if (result == VK_SUCCESS) {
@@ -67,6 +87,34 @@ private:
 		for (const auto& extension : extensions) {
 			std::cout << "\t" << extension.extensionName << "\n";
 		}
+	}
+	void ensureValidationSuccess() {
+		if(enableValidationLayers) {
+			if(!isValidationAvailable())
+				throw std::runtime_error("vulkan validation layers requested, but aren't available");
+			else
+				std::cout << "vulkan validation is enabled\n";
+		}
+	}
+	bool isValidationAvailable() {
+		uint32_t layerCount;
+		vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+
+		std::vector<VkLayerProperties> availableLayers(layerCount);
+		vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+
+		for (const char* layerName : validationLayers) {
+			for (const auto& layerProperties : availableLayers) {
+				if (strcmp(layerName, layerProperties.layerName) == 0) {
+					goto nextLayer;
+				}
+			}
+			returnFalse:
+			return false;
+			nextLayer:
+			continue;
+		}
+		return true;
 	}
 	void mainLoop() {
 		while (!glfwWindowShouldClose(window)) {
