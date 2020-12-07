@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClCompile Include="QueueFamilyIndices.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="RenderSet.cpp" />
     <ClCompile Include="ShaderModule.cpp" />
     <ClCompile Include="SwapChainSupport.cpp" />
   </ItemGroup>

@@ -9,12 +9,12 @@ const uint32_t DEFAULT_WINDOW_HEIGHT = 720;
 const int CONCURRENT_RENDER_FRAMES = 2;
 
 // list of necessary vulkan extensions for rendering
-const std::vector<const char*> deviceExtensions = {
+const vector<const char*> deviceExtensions = {
 	VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
 
 // get the validation layers defined in the Vulkan SDK
-const std::vector<const char*> validationLayers = {
+const vector<const char*> validationLayers = {
 	"VK_LAYER_KHRONOS_validation"
 };
 // turn on validation layers if compiled in debug mode
@@ -24,14 +24,14 @@ const bool debugMode = false;
 const bool debugMode = true;
 #endif
 
-class SingleTriangleApp {
+class Renderer {
 public:
 	void run() {
 		initWindow();
 		initVulkan();
 		mainLoop();
 	}
-	~SingleTriangleApp() {
+	~Renderer() {
 		destruct();
 	}
 
@@ -45,37 +45,39 @@ private:
 	VkQueue presentQueue;
 	VkSwapchainKHR swapchain;
 	QueueFamilyIndices indices;
-	std::vector<VkImage> swapChainImages;
-	std::vector<VkImageView> swapChainImageViews;
+	vector<VkImage> swapChainImages;
+	vector<VkImageView> swapChainImageViews;
 	VkFormat swapChainImageFormat;
 	VkExtent2D swapChainExtent;
 	VkRenderPass renderPass;
 	VkPipelineLayout pipelineLayout;
 	VkPipeline pipeline;
-	std::vector<VkFramebuffer> frameBuffers;
+	vector<VkFramebuffer> frameBuffers;
 	VkCommandPool commandPool;
-	std::vector<VkCommandBuffer> commandBuffers;
-	std::vector<RenderGate*> renderGates;
+	vector<VkCommandBuffer> commandBuffers;
+	vector<RenderGate*> renderGates;
 	size_t currentFrame = 0;
 
 	void initWindow() {
 		glfwInit();
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-		window = glfwCreateWindow(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, "SingleTriangleApp", nullptr, nullptr);
+		window = glfwCreateWindow(DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT, "Renderer", nullptr, nullptr);
 	}
 	void initVulkan() {
+		// window specific
 		createInstance();
 		createSurface();
 		registerDevice();
 		createLogicalDevice();
 		createRenderGates();
+		createCommandPool();
+		// frame size specific
 		createSwapChain();
 		createImageViews();
 		createRenderPass();
 		createPipeline();
 		createFrameBuffers();
-		createCommandPool();
 		createCommandBuffers();
 	}
 	void createRenderGates() {
@@ -464,7 +466,7 @@ private:
 		// fill a struct that contains information about the app
 		VkApplicationInfo appInfo{};
 		appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-		appInfo.pApplicationName = "SingleTriangleApp";
+		appInfo.pApplicationName = "Renderer";
 		appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
 		appInfo.pEngineName = "None";
 		appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -615,7 +617,7 @@ private:
 };
 
 int main() {
-	SingleTriangleApp app;
+	Renderer app;
 
 	try {
 		app.run();
