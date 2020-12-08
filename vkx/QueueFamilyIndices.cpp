@@ -1,4 +1,27 @@
-#include "StandardIncludes.h"
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+
+#include <iostream>
+#include <stdexcept>
+#include <cstdlib>
+#include <vector>
+#include <cstring>
+#include <map>
+#include <optional>
+#include <set>
+#include <algorithm>
+#include <fstream>
+
+#include "Renderer.h"
+#include "Window.h"
+#include "SwapChainSupport.h"
+#include "RenderGate.h"
+#include "QueueFamilyIndices.h"
+#include "ShaderModule.h"
+#include "LayoutBundle.h"
+#include "RenderTarget.h"
+
+using namespace std;
 
 class QueueFamilyIndices {
 	public:
@@ -8,7 +31,7 @@ class QueueFamilyIndices {
 			return graphicsFamily.has_value() && presentFamily.has_value();
 		}
 
-		static QueueFamilyIndices queryDevice(VkPhysicalDevice device, VkSurfaceKHR surface) {
+		static QueueFamilyIndices queryDevice(VkPhysicalDevice& device, VkSurfaceKHR& surface) {
 			QueueFamilyIndices indices;
 
 			uint32_t queueFamilyCount = 0;

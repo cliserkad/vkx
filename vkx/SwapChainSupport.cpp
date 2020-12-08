@@ -1,21 +1,40 @@
-#include "StandardIncludes.h"
-#include "QueueFamilyIndices.cpp"
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+
+#include <iostream>
+#include <stdexcept>
+#include <cstdlib>
+#include <vector>
+#include <cstring>
+#include <map>
+#include <optional>
+#include <set>
+#include <algorithm>
+#include <fstream>
+
+#include "Renderer.h"
+#include "Window.h"
+#include "SwapChainSupport.h"
+#include "RenderGate.h"
+#include "QueueFamilyIndices.h"
+#include "ShaderModule.h"
+#include "LayoutBundle.h"
+#include "RenderTarget.h"
+
+using namespace std;
 
 class SwapChainSupport {
 	public:
 		VkSurfaceCapabilitiesKHR capabilities;
-		std::vector<VkSurfaceFormatKHR> formats;
-		std::vector<VkPresentModeKHR> presentModes;
+		vector<VkSurfaceFormatKHR> formats;
+		vector<VkPresentModeKHR> presentModes;
 		bool isAdequate() {
 			return !formats.empty() && !presentModes.empty();
 		}
-		VkSwapchainCreateInfoKHR buildInfoStruct(GLFWwindow* window, VkSurfaceKHR surface, QueueFamilyIndices indices) {
-			return buildInfoStruct(window, surface, indices, VK_NULL_HANDLE);
-		}
-		VkSwapchainCreateInfoKHR buildInfoStruct(GLFWwindow* window, VkSurfaceKHR surface, QueueFamilyIndices indices, VkSwapchainKHR oldChain) {
+		VkSwapchainCreateInfoKHR buildInfoStruct(const Renderer& renderer, const Window& window) {
 			VkSwapchainCreateInfoKHR createInfo{};
 			createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-			createInfo.surface = surface;
+			createInfo.surface = renderer.surface;
 			createInfo.minImageCount = preferredImageCount();
 			createInfo.imageFormat = preferredSurfaceFormat().format;
 			createInfo.imageColorSpace = preferredSurfaceFormat().colorSpace;
@@ -26,13 +45,13 @@ class SwapChainSupport {
 			createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
 			createInfo.presentMode = preferredPresentMode();
 			createInfo.clipped = VK_TRUE;
-			createInfo.oldSwapchain = oldChain;
+			createInfo.oldSwapchain = VK_NULL_HANDLE;
 
 			uint32_t queueFamilyIndicesArray[] = {
-				indices.graphicsFamily.value(),
-				indices.presentFamily.value()
+				renderer.indices.graphicsFamily.value(),
+				renderer.indices.presentFamily.value()
 			};
-			if (indices.graphicsFamily != indices.presentFamily) {
+			if (renderer.indices.graphicsFamily != renderer.indices.presentFamily) {
 				createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
 				createInfo.queueFamilyIndexCount = 2;
 				createInfo.pQueueFamilyIndices = queueFamilyIndicesArray;
@@ -59,12 +78,12 @@ class SwapChainSupport {
 			// vsync
 			return VK_PRESENT_MODE_FIFO_KHR;
 		}
-		VkExtent2D preferredFrameBufferSize(GLFWwindow* window) {
+		VkExtent2D preferredFrameBufferSize(const Window& window) {
 			if (capabilities.currentExtent.width != UINT32_MAX) {
 				return capabilities.currentExtent;
 			} else {
 				int width, height = 0;
-				glfwGetFramebufferSize(window, &width, &height);
+				glfwGetFramebufferSize(window.window, &width, &height);
 				VkExtent2D actualExtent = {
 					static_cast<uint32_t>(width),
 					static_cast<uint32_t>(height)
@@ -80,7 +99,7 @@ class SwapChainSupport {
 				imageCount = capabilities.maxImageCount;
 			return imageCount;
 		}
-		static SwapChainSupport queryDevice(VkPhysicalDevice device, VkSurfaceKHR surface) {
+		static SwapChainSupport queryDevice(VkPhysicalDevice& device, VkSurfaceKHR& surface) {
 			SwapChainSupport details;
 
 			vkGetPhysicalDeviceSurfaceCapabilitiesKHR(device, surface, &details.capabilities);

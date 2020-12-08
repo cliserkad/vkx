@@ -159,14 +159,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="LayoutBundle.cpp" />
     <ClCompile Include="QueueFamilyIndices.cpp" />
-    <ClCompile Include="main.cpp" />
-    <ClCompile Include="RenderSet.cpp" />
+    <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="ShaderModule.cpp" />
     <ClCompile Include="SwapChainSupport.cpp" />
+    <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="StandardIncludes.h" />
+    <ClInclude Include="LayoutBundle.h" />
+    <ClInclude Include="Renderer.h" />
+    <ClInclude Include="RenderGate.h" />
+    <ClInclude Include="RenderTarget.h" />
+    <ClInclude Include="ShaderModule.h" />
+    <ClInclude Include="SwapChainSupport.h" />
+    <ClInclude Include="Window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
