@@ -1,4 +1,10 @@
-#pragma once
+#ifndef QueueFamilyIndices_h
+#define QueueFamilyIndices_h
+
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+
+#include <optional>
 
 class QueueFamilyIndices {
 public:
@@ -9,4 +15,4 @@ public:
 	static QueueFamilyIndices queryDevice(VkPhysicalDevice& device, VkSurfaceKHR& surface);
 };
 
-
+#endif

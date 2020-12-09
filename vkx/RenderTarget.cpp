@@ -1,27 +1,8 @@
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-
-#include <iostream>
-#include <stdexcept>
-#include <cstdlib>
-#include <vector>
-#include <cstring>
-#include <map>
-#include <optional>
-#include <set>
-#include <algorithm>
-#include <fstream>
-
-#include "Renderer.h"
-#include "Window.h"
-#include "SwapChainSupport.h"
-#include "RenderGate.h"
-#include "QueueFamilyIndices.h"
-#include "ShaderModule.h"
-#include "LayoutBundle.h"
 #include "RenderTarget.h"
 
-using namespace std;
+#include <stdexcept>
+
+#include "SwapChainSupport.h"
 
 // contains data and settings for a Renderer
 class RenderTarget {
@@ -29,11 +10,11 @@ public:
 	VkSwapchainKHR swapchain;
 	VkFormat format;
 	VkExtent2D size;
-	vector<VkImage> images;
-	vector<VkImageView> views;
+	std::vector<VkImage> images;
+	std::vector<VkImageView> views;
 	VkPipeline pipeline;
-	vector<VkFramebuffer> frameBuffers;
-	vector<VkCommandBuffer> commandBuffers;
+	std::vector<VkFramebuffer> frameBuffers;
+	std::vector<VkCommandBuffer> commandBuffers;
 
 	RenderTarget(Renderer& renderer) {
 		initSwapChain(renderer);
@@ -60,7 +41,7 @@ private:
 
 		size = createInfo.imageExtent;
 		if (vkCreateSwapchainKHR(renderer.device, &createInfo, nullptr, &swapchain) != VK_SUCCESS)
-			throw runtime_error("Failed to create Swapchain");
+			throw std::runtime_error("Failed to create Swapchain");
 		uint32_t imageCount = 0;
 		vkGetSwapchainImagesKHR(renderer.device, swapchain, &imageCount, nullptr);
 		images.resize(imageCount);
@@ -85,7 +66,7 @@ private:
 			createInfo.subresourceRange.baseArrayLayer = 0;
 			createInfo.subresourceRange.layerCount = 1;
 			if (vkCreateImageView(renderer.device, &createInfo, nullptr, &views[i]) != VK_SUCCESS) {
-				throw runtime_error("failed to create image views!");
+				throw std::runtime_error("failed to create image views!");
 			}
 		}
 	}

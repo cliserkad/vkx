@@ -1,5 +1,5 @@
-#pragma once
-class RenderGate;
+#ifndef RenderGate_h
+#define RenderGate_h
 
 class RenderGate {
 public:
@@ -14,3 +14,5 @@ public:
 	RenderGate(VkDevice& device);
 
 };
+
+#endif

@@ -1,5 +1,10 @@
-#pragma once
-class LayoutBundle;
+#ifndef LayoutBundle_h
+#define LayoutBundle_h
+
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+
+#include "Renderer.h"
 
 class LayoutBundle {
 public:
@@ -14,3 +19,5 @@ public:
 	LayoutBundle(Renderer* renderer);
 	VkGraphicsPipelineCreateInfo genPipelineInfo(Renderer* renderer);
 };
+
+#endif

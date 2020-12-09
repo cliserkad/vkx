@@ -1,40 +1,17 @@
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-
-#include <iostream>
-#include <stdexcept>
-#include <cstdlib>
-#include <vector>
-#include <cstring>
-#include <map>
-#include <optional>
-#include <set>
-#include <algorithm>
-#include <fstream>
-
-#include "Renderer.h"
-#include "Window.h"
 #include "SwapChainSupport.h"
-#include "RenderGate.h"
-#include "QueueFamilyIndices.h"
-#include "ShaderModule.h"
-#include "LayoutBundle.h"
-#include "RenderTarget.h"
-
-using namespace std;
 
 class SwapChainSupport {
 	public:
 		VkSurfaceCapabilitiesKHR capabilities;
-		vector<VkSurfaceFormatKHR> formats;
-		vector<VkPresentModeKHR> presentModes;
+		std::vector<VkSurfaceFormatKHR> formats;
+		std::vector<VkPresentModeKHR> presentModes;
 		bool isAdequate() {
 			return !formats.empty() && !presentModes.empty();
 		}
 		VkSwapchainCreateInfoKHR buildInfoStruct(const Renderer& renderer, const Window& window) {
 			VkSwapchainCreateInfoKHR createInfo{};
 			createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-			createInfo.surface = renderer.surface;
+			createInfo.surface = renderer.window.surface;
 			createInfo.minImageCount = preferredImageCount();
 			createInfo.imageFormat = preferredSurfaceFormat().format;
 			createInfo.imageColorSpace = preferredSurfaceFormat().colorSpace;

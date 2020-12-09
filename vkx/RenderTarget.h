@@ -1,17 +1,22 @@
-#pragma once
-class RenderTarget;
+#ifndef RenderTarget_h
+#define RenderTarget_h
+
+#include <vector>
+#include "Renderer.h"
 
 class RenderTarget {
 public:
 	VkSwapchainKHR swapchain;
 	VkFormat format;
 	VkExtent2D size;
-	vector<VkImage> images;
-	vector<VkImageView> views;
+	std::vector<VkImage> images;
+	std::vector<VkImageView> views;
 	VkPipeline pipeline;
-	vector<VkFramebuffer> frameBuffers;
-	vector<VkCommandBuffer> commandBuffers;
+	std::vector<VkFramebuffer> frameBuffers;
+	std::vector<VkCommandBuffer> commandBuffers;
 
 	RenderTarget(Renderer& renderer);
 	void clean(Renderer& parent);
 };
+
+#endif

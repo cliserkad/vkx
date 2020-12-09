@@ -169,7 +169,9 @@
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Engine.h" />
     <ClInclude Include="LayoutBundle.h" />
+    <ClInclude Include="QueueFamilyIndices.h" />
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="RenderGate.h" />
     <ClInclude Include="RenderTarget.h" />

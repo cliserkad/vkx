@@ -1,41 +1,24 @@
+#include "LayoutBundle.h"
+
+#include <stdexcept>
+
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include <iostream>
-#include <stdexcept>
-#include <cstdlib>
-#include <vector>
-#include <cstring>
-#include <map>
-#include <optional>
-#include <set>
-#include <algorithm>
-#include <fstream>
-
-#include "Renderer.h"
-#include "Window.h"
-#include "SwapChainSupport.h"
-#include "RenderGate.h"
-#include "QueueFamilyIndices.h"
-#include "ShaderModule.h"
-#include "LayoutBundle.h"
-#include "RenderTarget.h"
-
-using namespace std;
-
 class LayoutBundle {
 public:
-	VkPipelineLayout layout;
-	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
-	VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
-	VkPipelineRasterizationStateCreateInfo rasterizer{};
-	VkPipelineMultisampleStateCreateInfo multisampling{};
-	VkPipelineColorBlendAttachmentState colorBlendAttachment{};
-	VkPipelineColorBlendStateCreateInfo colorBlending{};
-	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+	VkPipelineLayout layout = VK_NULL_HANDLE;
+	VkPipelineVertexInputStateCreateInfo vertexInputInfo = {};
+	VkPipelineInputAssemblyStateCreateInfo inputAssembly = {};
+	VkPipelineRasterizationStateCreateInfo rasterizer = {};
+	VkPipelineMultisampleStateCreateInfo multisampling = {};
+	VkPipelineColorBlendAttachmentState colorBlendAttachment = {};
+	VkPipelineColorBlendStateCreateInfo colorBlending = {};
+	VkPipelineLayoutCreateInfo pipelineLayoutInfo = {};
 
 	LayoutBundle(Renderer* renderer) {
-		vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+
+		LayoutBundle::vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 		vertexInputInfo.vertexBindingDescriptionCount = 0;
 		vertexInputInfo.vertexAttributeDescriptionCount = 0;
 

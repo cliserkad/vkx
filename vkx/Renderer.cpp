@@ -1,37 +1,27 @@
+#include "Renderer.h"
+
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include <iostream>
-#include <stdexcept>
-#include <cstdlib>
 #include <vector>
-#include <cstring>
-#include <map>
-#include <optional>
-#include <set>
-#include <algorithm>
+#include <stdexcept>
 #include <fstream>
+#include <map>
+#include <set>
 
-#include "Renderer.h"
-#include "Window.h"
-#include "SwapChainSupport.h"
-#include "RenderGate.h"
-#include "QueueFamilyIndices.h"
 #include "ShaderModule.h"
-#include "LayoutBundle.h"
-#include "RenderTarget.h"
+#include "SwapChainSupport.h"
 
-using namespace std;
 
 const int CONCURRENT_RENDER_FRAMES = 2;
 
 // list of necessary vulkan extensions for rendering
-const vector<const char*> deviceExtensions = {
+const std::vector<const char*> deviceExtensions = {
 	VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
 
 // get the validation layers defined in the Vulkan SDK
-const vector<const char*> validationLayers = {
+const std::vector<const char*> validationLayers = {
 	"VK_LAYER_KHRONOS_validation"
 };
 // turn on validation layers if compiled in debug mode
@@ -55,8 +45,8 @@ public:
 	LayoutBundle layoutBundle;
 	VkPipelineShaderStageCreateInfo* stages;
 	VkCommandPool commandPool;
-	vector<VkCommandBuffer> commandBuffers;
-	vector<RenderGate*> renderGates;
+	std::vector<VkCommandBuffer> commandBuffers;
+	std::vector<RenderGate*> renderGates;
 	size_t currentFrame = 0;
 	Renderer() {
 		createInstance();
@@ -69,7 +59,7 @@ public:
 		window = Window(this);
 		target = RenderTarget(*this);
 	}
-	void mainLoop() {
+	void run() {
 		while (!glfwWindowShouldClose(window.window)) {
 			glfwPollEvents();
 			drawFrame();
